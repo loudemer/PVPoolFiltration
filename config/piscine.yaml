@@ -1,0 +1,92 @@
+####################################################
+#                                                  #
+#                   PISCINE                        #
+#                                                  #
+####################################################
+
+input_number:
+# temperature max de l'eau 
+  temp_max_piscine:
+    name: Temp max eau
+    min: -2
+    max: 35
+    unit_of_measurement: °C
+    step: 0.1
+    icon: mdi:thermometer
+    mode: box
+# Duree injection h2o2
+#  duree_injection_h2o2:
+#    name: Duree injection H2O2
+#    min: 10
+#    max: 200
+#    unit_of_measurement: "Sec"
+#    step: 10
+#    icon: mdi:thermometer
+#    mode: box
+
+# coefficient de filtration 
+  filtration_coeff_abaque:
+    name: Coeff filtration Piscine
+    min: 10
+    max: 140
+    unit_of_measurement: "%"
+    step: 10.0
+    icon: mdi:percent
+    mode: box
+
+input_boolean:  
+#  prog_h2o2_actif:
+#    name: Arret traitement H202
+  automatisation_piscine:
+    name: "Automatisation Piscine"
+  start_manual_filtration:
+    name: "demarrage cycle manuel"
+  
+input_text:
+  duree_filtration_programmee:
+    name: Duree Filtration programmee
+
+  nb_cycles_filtration:
+    name: Nb cycles filtration  
+
+input_select:
+  mode_fonctionnement_filtration:
+    name: Mode Fonctionnement
+    options:
+      - arret
+      - automatique
+      - manuel
+    initial: automatique
+    icon: mdi:location-enter
+
+# Calcul de la duree de filtration sur 24h 
+# history_stats delivre des valeurs en heures   
+sensor:
+  - platform: history_stats
+    name: duree_filtration_realisee  
+    entity_id: switch.piscine_pompe_filtration  # A REMPLIR ***
+    state: "on"
+    type: time
+    start: "{{ now().replace(hour=4, minute=0, second=0) }}"
+    duration:
+      hours: 24
+
+#  - platform: history_stats # A SUPPRIMER SI VOUS N'UTILiSEZ PAS LA POMPE H2O2
+#    name: duree_injection_h2o2   
+#    entity_id: switch.piscine_pompe_h2o2
+#    state: "on"
+#    type: time
+#    start: "{{ now().replace(hour=4, minute=0, second=0) }}"
+#    duration: 
+#      hours: 24
+
+#  - platform: template  # Utilise pour inverser la valeur du sensor si besoin
+#    sensors:
+#      status_filtration:
+#        friendly_name: 'Status filtration'
+#        value_template: >-          
+#          {% if is_state('binary_sensor.status_filtration','on') %}
+#          off
+#          {% else %}
+#          on
+#          {% endif %}    

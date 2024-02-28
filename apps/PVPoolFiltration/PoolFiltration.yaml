@@ -1,0 +1,40 @@
+PoolFiltration:
+  class: PoolFiltration
+  module: PoolFiltration
+  log: poolfiltration_log
+  constrain_input_boolean: input_boolean.automatisation_piscine
+
+  # switch de la pompe de filtration
+  pompe_filtration: switch.piscine_pompe_filtration
+ # sensor recueil de la temperature de l'eau de la piscine
+  temperature_eau: sensor.temperature_piscine
+  # Utilisation de PVOptimizer
+  enable_solar_optimizer: input_boolean.enable_solar_optimizer
+  # demande de cycle de filtration al'optimiseur
+  enable_solar_optimize_piscine: input_boolean.device_request_5
+  # activation d'un cycle de filtration par l'optimiseur
+  activation_cycle: input_boolean.start_device_5
+  # Entree du coefficient de filtration a appliquer sur le calcul de la durée
+  coeff_filtration: input_number.filtration_coeff_abaque
+  # Affichage de la duree de filtration calculee pour la journee
+  duree_programmee: input_text.duree_filtration_programmee
+  # Affichage de la temperature max de la piscine de la veille
+  temp_max_piscine: input_number.temp_max_piscine
+  # duree de filtration realisee
+  duree_filtration_realisee: sensor.duree_filtration_realisee
+  # Affichage du nb cycles filtration realises
+  nb_cycles_filtration: input_text.nb_cycles_filtration
+  # etat de la pompe de filtration (juge sur le relai de puissance)
+  status_filtration: binary_sensor.piscine_status_pompe_filtration
+  # indicateur heures creuses
+  heure_creuse: binary_sensor.rte_tempo_heures_creuses
+  # mise en route d'un cycle manuel
+  manual_cycle: input_boolean.start_manual_filtration
+  # selection mode de fonctionnement
+  mode_fonctionnement: input_select.mode_fonctionnement_filtration
+  # switch de la pompe h2o2 
+  pompe_h2o2: switch.piscine_pompe_h2o2
+   # Inactivation du traitement par H2O2
+  h2o2_actif: input_boolean.prog_h2o2_actif
+  # duree injection H2O2 en secondes
+  duree_injection_h2o2: input_number.duree_injection_h2o2

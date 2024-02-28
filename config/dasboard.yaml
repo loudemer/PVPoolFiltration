@@ -1,0 +1,252 @@
+type: vertical-stack
+cards:
+  - type: custom:mushroom-title-card
+    title: Commandes
+    alignment: center
+  - type: horizontal-stack
+    cards:
+      - type: custom:mushroom-template-card
+        entity: switch.piscine_pompe_filtration
+        primary: Filtration
+        secondary: |-
+          {% if is_state('switch.piscine_pompe_filtration', 'on') %}
+            Marche
+          {% else %}
+            Arrêt
+          {% endif %}
+        icon: |-
+          {% if is_state('switch.piscine_pompe_filtration', 'on') %}
+            mdi:pump
+          {% else %}
+            mdi:pump-off
+          {% endif %}
+        icon_color: |-
+          {% if is_state('switch.piscine_pompe_filtration', 'on') %}
+            green
+          {% else %}
+            grey
+          {% endif %}
+        layout: vertical
+        tap_action:
+          action: toggle
+        hold_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: switch.piscine_pompe_h2o2
+        primary: H2O2
+        secondary: |-
+          {% if is_state('switch.piscine_pompe_h2o2', 'on') %}
+            Marche
+          {% else %}
+            Arrêt
+          {% endif %}
+        icon: |-
+          {% if is_state('switch.piscine_pompe_h2o2', 'on') %}
+            mdi:pump
+          {% else %}
+            mdi:pump-off
+          {% endif %}
+        icon_color: |-
+          {% if is_state('switch.piscine_pompe_h2o2', 'on') %}
+            green
+          {% else %}
+            grey
+          {% endif %}
+        layout: vertical
+        tap_action:
+          action: toggle
+        hold_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: switch.piscine_eclairage_piscine
+        primary: Eclairage
+        secondary: |-
+          {% if is_state('switch.piscine_eclairage_piscine', 'on') %}
+            Marche
+          {% else %}
+            Arrêt
+          {% endif %}
+        icon: |-
+          {% if is_state('switch.piscine_eclairage_piscine', 'on') %}
+            mdi:lightbulb-spot
+          {% else %}
+            mdi:lightbulb-spot-off
+          {% endif %}
+        icon_color: |-
+          {% if is_state('switch.piscine_eclairage_piscine', 'on') %}
+            green
+          {% else %}
+            grey
+          {% endif %}
+        layout: vertical
+        tap_action:
+          action: toggle
+        hold_action:
+          action: more-info
+  - type: horizontal-stack
+    cards:
+      - type: custom:mushroom-template-card
+        entity: input_boolean.start_manual_filtration
+        primary: Cycle Manuel 1h
+        secondary: |-
+          {% if is_state('input_boolean.start_manual_filtration', 'on') %}
+            Marche
+          {% else %}
+            Arrêt
+          {% endif %}
+        icon: |-
+          {% if is_state('input_boolean.start_manual_filtration', 'on') %}
+            mdi:recycle-variant
+          {% else %}
+            mdi:recycle-variant
+          {% endif %}
+        icon_color: |-
+          {% if is_state('input_boolean.start_manual_filtration', 'on') %}
+            green
+          {% else %}
+            grey
+          {% endif %}
+        layout: vertical
+        tap_action:
+          action: toggle
+        hold_action:
+          action: more-info
+      - type: custom:mushroom-select-card
+        entity: input_select.mode_fonctionnement_filtration
+        name: Mode de filtration
+        primary_info: name
+        hold_action:
+          action: more-info
+        double_tap_action:
+          action: more-info
+        fill_container: false
+      - type: custom:mushroom-template-card
+        entity: input_boolean.prog_h2o2_actif
+        primary: H2O2 actif
+        secondary: |-
+          {% if is_state('input_boolean.prog_h2o2_actif', 'on') %}
+            Marche
+          {% else %}
+            Arrêt
+          {% endif %}
+        icon: |-
+          {% if is_state('input_boolean.prog_h2o2_actif', 'on') %}
+            mdi:water-pump
+          {% else %}
+            mdi:water-pump-off
+          {% endif %}
+        icon_color: |-
+          {% if is_state('input_boolean.prog_h2o2_actif', 'on') %}
+            amber
+          {% else %}
+            grey
+          {% endif %}
+        layout: vertical
+        tap_action:
+          action: toggle
+        hold_action:
+          action: more-info
+  - type: horizontal-stack
+    cards:
+      - type: custom:mushroom-number-card
+        entity: input_number.filtration_coeff_abaque
+        name: Coeff Filtration Piscine
+        primary_info: name
+        display_mode: slider
+        tap_action:
+          action: more-info
+        icon: mdi:percent
+        icon_type: icon
+      - type: custom:mushroom-number-card
+        entity: input_number.duree_injection_h2o2
+        name: Duree inj h2o2
+        primary_info: name
+        display_mode: slider
+        icon_color: amber
+        tap_action:
+          action: more-info
+        icon: mdi:orbit-variant
+  - type: custom:mushroom-title-card
+    title: Informations
+    alignment: center
+  - type: horizontal-stack
+    cards:
+      - type: history-graph
+        entities:
+          - entity: switch.piscine_pompe_filtration
+            name: 'Filtration '
+          - entity: switch.piscine_pompe_h2o2
+            name: h2o2
+        hours_to_show: 24
+  - type: horizontal-stack
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: sensor.temperature_piscine
+        name: Temp eau
+        icon_color: blue
+        layout: vertical
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-entity-card
+        entity: input_number.temp_max_piscine
+        name: Temp max
+        layout: vertical
+        tap_action:
+          action: more-info
+        icon_color: red
+      - type: custom:mushroom-template-card
+        entity: binary_sensor.piscine_status_pompe_filtration
+        primary: Etat Filtration
+        secondary: >-
+          {% if is_state('binary_sensor.piscine_status_pompe_filtration', 'on')
+          %}
+            Marche
+          {% else %}
+            Arrêt
+          {% endif %}
+        icon: >-
+          {% if is_state('binary_sensor.piscine_status_pompe_filtration', 'on')
+          %}
+            mdi:pump
+          {% else %}
+            mdi:pump-off
+          {% endif %}
+        icon_color: >-
+          {% if is_state('binary_sensor.piscine_status_pompe_filtration', 'on')
+          %}
+            green
+          {% else %}
+            grey
+          {% endif %}
+        layout: vertical
+        tap_action:
+          action: toggle
+        hold_action:
+          action: more-info
+      - type: custom:mushroom-entity-card
+        entity: input_text.nb_cycles_filtration
+        name: Nb cycles
+        layout: vertical
+  - type: horizontal-stack
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: input_text.duree_filtration_programmee
+        icon_color: amber
+        layout: vertical
+        tap_action:
+          action: more-info
+        name: Durée Program
+      - type: custom:mushroom-entity-card
+        entity: sensor.duree_filtration_realisee
+        name: Durée Filtration
+        icon_color: amber
+        layout: vertical
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-entity-card
+        entity: sensor.duree_injection_h2o2
+        name: Durée H2O2
+        icon_color: amber
+        layout: vertical
+        tap_action:
+          action: more-info
