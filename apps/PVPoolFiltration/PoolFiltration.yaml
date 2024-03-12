@@ -32,9 +32,11 @@ PoolFiltration:
   manual_cycle: input_boolean.start_manual_filtration
   # selection mode de fonctionnement
   mode_fonctionnement: input_select.mode_fonctionnement_filtration
+  # utilisation traitement piscine par h2o2 (oui / non)
+  traitement_h2o2: oui
   # switch de la pompe h2o2 
   pompe_h2o2: switch.piscine_pompe_h2o2
-   # Inactivation du traitement par H2O2
+  # Inactivation du traitement par H2O2
   h2o2_actif: input_boolean.prog_h2o2_actif
   # duree injection H2O2 en secondes
   duree_injection_h2o2: input_number.duree_injection_h2o2
