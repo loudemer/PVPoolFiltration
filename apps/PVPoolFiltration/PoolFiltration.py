@@ -1,7 +1,7 @@
 #############################################################################################################
 # PoolFiltration application for appdaemon (Home Assistant)
 # Author : Gerard Mamelle (2024)
-# Version : 1.0.0
+# Version : 1.0.2
 # Program under MIT licence
 #
 # This program must be used with an energy optimizer application like PVOptimizer 
@@ -15,6 +15,12 @@
 # peak_off hours at night
 # Water treatment is performed at the beginning of each filtration cycle with an injection of h2o2 
 ############################################################################################################
+# TRAITEMENT H2O2
+# Debit pompe 65 ml/mn
+# Dose pour 45 m3 
+# Moins de 25° : 240 ml / J    environ 240 Sec 
+# Plus de 25° : 430 ml / J  environ 430 Sec mn
+##############################################################################################
 import hassapi as hass
 import math
 import datetime
@@ -35,6 +41,7 @@ class PoolFiltration(hass.Hass):
         self.coeff_filtration = self.get_coeff_filtration()
         self.duree_realisee = self.get_duree_realisee()
         self.duree_injection_h2o2 = self.get_duree_injection_h2o2()
+        self.duree_journaliere_injection_h2o2 = 240
         self.temps_filtration = timedelta(minutes = 0)
         self.mode_fonctionnement = self.get_state(self.args['mode_fonctionnement'])
         if self.use_h2o2:
@@ -106,8 +113,8 @@ class PoolFiltration(hass.Hass):
             try:
                 fduree_injection = float(self.get_safe_float("duree_injection_h2o2"))
             except Exception as e:
-                self.log("Error getting h2o2 injection duration, using default of 90", e)
-                return 90
+                self.log("Error getting h2o2 injection duration, using default of 60", e)
+                return 60
             return int(fduree_injection)
         else:
             return 0
@@ -140,7 +147,10 @@ class PoolFiltration(hass.Hass):
                 self.log('Filtration HC demarree')
                 self.start_pompe_filtration()
                 if self.use_h2o2:
-                    self.inject_h2o2() 
+                    duree_realisee_h2o2 = self.get_duree_injection_h2o2()
+                    duree_restante_h2o2 = self.duree_journaliere_injection_h2o2 - duree_realisee_h2o2
+                    if duree_restante_h2o2 > 0:
+                        self.inject_h2o2(duree_restante_h2o2) 
                 self.run_in(self.stop_auto,duree_restante)          
 
     # Changement du mode de fonctionnement
@@ -174,7 +184,7 @@ class PoolFiltration(hass.Hass):
     def run_manual_cycle(self):
         self.set_state(self.args['mode_fonctionnement'], state='manuel')
         self.start_pompe_filtration()
-        self.inject_h2o2() 
+        self.inject_h2o2(self.get_duree_injection_h2o2()) 
         self.nb_cycle = self.nb_cycle + 1
         self.value(self.args['nb_cycles_filtration'], str(self.nb_cycle))
         self.run_in(self.stop_manual, 60*60)
@@ -189,7 +199,7 @@ class PoolFiltration(hass.Hass):
             self.log('Filtration HP demarree')
             self.start_pompe_filtration()
             if self.use_h2o2:
-                self.inject_h2o2() 
+                self.inject_h2o2(self.get_duree_injection_h2o2()) 
             self.nb_cycle = self.nb_cycle + 1
             self.set_value(self.args['nb_cycles_filtration'], str(self.nb_cycle))
         else:
@@ -221,7 +231,7 @@ class PoolFiltration(hass.Hass):
         if min_cycle > self.nb_cycle and self.get_state(self.args['pompe_filtration']) == 'off':
             self.start_pompe_filtration()
             if self.use_h2o2:
-                self.inject_h2o2() 
+                self.inject_h2o2(self.get_duree_injection_h2o2()) 
             self.nb_cycle = self.nb_cycle + 1
             self.run_in(self.stop_auto, 30*60)
         
@@ -231,14 +241,14 @@ class PoolFiltration(hass.Hass):
         self.compute_duree_abaque()
 
     # Sequence injection h2o2 au debut du cycle de filtration
-    def inject_h2o2(self):
+    def inject_h2o2(self, duree: int):
         self.run_in(self.check_temperature, 5)
         if self.h2o2_actif == 'off' or not self.use_h2o2:
             return
         self.log("Inject H2O2")
         self.start_pompe_h2o2() 
-        self.run_in(self.stop_pompe_h2o2,  self.get_duree_injection_h2o2())
-        self.run_in(self.stop_pompe_h2o2,  self.get_duree_injection_h2o2() + 10)
+        self.run_in(self.stop_pompe_h2o2,  duree)
+        self.run_in(self.stop_pompe_h2o2,  duree + 10)
 
     # Arret pompe H2O2 
     def stop_pompe_h2o2(self, kwargs):
@@ -306,6 +316,11 @@ class PoolFiltration(hass.Hass):
         self.log(f'duree filtration {str_duree_heure}')
         self.set_state(self.args["duree_programmee"],state=str_duree_heure)
         self.temps_filtration = duree_heure
+        if self.use_h2o2 :
+            if temperature <= 15.0 :
+                self.duree_journaliere_injection_h2o2 = 240
+            else:
+                self.duree_journaliere_injection_h2o2 = 430
 
     # format valeur timedelta en string pour affichage
     def format_timedelta(self, delta: timedelta) -> str:
